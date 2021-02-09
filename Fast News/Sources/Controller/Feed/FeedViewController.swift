@@ -15,18 +15,6 @@ class FeedViewController: UIViewController {
     let kToDetails: String = "toDetails"
     
     //MARK: - Properties
-    
-    var hotNews: [HotNews] = [HotNews]() {
-        didSet {
-            var viewModels: [HotNewsViewModel] = [HotNewsViewModel]()
-            _ = hotNews.map { (news) in
-                viewModels.append(HotNewsViewModel(hotNews: news))
-            }
-            
-            self.mainView.setup(with: viewModels, and: self)
-        }
-    }
-    
     var mainView: FeedView {
         guard let view = self.view as? FeedView else {
             fatalError("View is not of type FeedView!")
@@ -40,15 +28,7 @@ class FeedViewController: UIViewController {
         navigationItem.title = "Fast News"
         navigationController?.navigationBar.prefersLargeTitles = true
         
-        HotNewsProvider.shared.hotNews { (completion) in
-            do {
-                let hotNews = try completion()
-                
-                self.hotNews = hotNews
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
+        mainView.setup(with: self)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -60,7 +40,7 @@ class FeedViewController: UIViewController {
 }
 
 extension FeedViewController: FeedViewDelegate {
-    func didTouch(cell: FeedCell, indexPath: IndexPath) {
-        self.performSegue(withIdentifier: kToDetails, sender: self.mainView.viewModels[indexPath.row])
+    func didTap(with viewModel: TypeProtocol) {
+        self.performSegue(withIdentifier: kToDetails, sender: viewModel)
     }
 }

@@ -9,11 +9,11 @@ import Foundation
 import Alamofire
 
 //MARK: - Type alias
-typealias HotNewsCallback = ( () throws -> [HotNews]) -> Void
-typealias HotNewsCommentsCallback = ( () throws -> [Comment]) -> Void
+typealias HotNewsCallback = ( () throws -> HotNewsResponse?) -> Void
+typealias HotNewsCommentsCallback = ( () throws -> CommentsResponse?) -> Void
 
 class HotNewsProvider {
-    
+    typealias ResponseCompletion<T> = (() throws -> T?) -> Void
     //MARK: - Constants
     
     // Hot News endpoint
@@ -25,52 +25,42 @@ class HotNewsProvider {
     private let kLimitKey = "limit"
     private let kLimitValue = 5
     private let kAfterKey = "after"
-    private let kAfterValue = ""
+    private var kAfterValue = ""
     
     //MARK: - Singleton
     
     static let shared: HotNewsProvider = HotNewsProvider()
     
     //MARK: - Public Methods
-    
-    func hotNews(completion: @escaping HotNewsCallback) {
+
+    func hotNews(parameters: [String: Any]? = nil, completion: @escaping HotNewsCallback) {
         let alamofire = APIProvider.shared.sessionManager
         let requestString = APIProvider.shared.baseURL() + kHotNewsEndpoint
-        
-        let parameters: Parameters = [ kLimitKey : kLimitValue,
-                                       kAfterKey : kAfterValue ]
-        
+
         do {
             let requestURL = try requestString.asURL()
             
             let headers: HTTPHeaders = APIProvider.shared.baseHeader()
             
-            alamofire.request(requestURL, method: .get, parameters: parameters, encoding: URLEncoding.queryString, headers: headers).responseJSON { (response) in
+            alamofire.request(requestURL, method: .get, parameters: parameters,
+                              encoding: URLEncoding.queryString,
+                              headers: headers).responseJSON { (response) in
                 
                 switch response.result {
-                case .success:
+                case let .success(jsonData):
                     
-                    guard let hotNewsDict = response.result.value as? [String: AnyObject],
-                          let dictArray = hotNewsDict["data"]?["children"] as? [[String: AnyObject]] else {
-                        completion { return [HotNews]() }
-                        return
-                    }
-                    
-                    var hotNewsArray: [HotNews] = [HotNews]()
-                    
-                    for hotNews in dictArray {
-                        let data = hotNews["data"]
-                        
-                        guard let jsonData = try? JSONSerialization.data(withJSONObject: data as Any, options: .prettyPrinted),
-                              let hotNews = try? JSONDecoder().decode(HotNews.self, from: jsonData) else {
-                            completion { return [HotNews]() }
-                            return
+                    do {
+                        if let hotNewsDict = jsonData as? [String: AnyObject],
+                            let dataArray = hotNewsDict["data"] as? [String: AnyObject] {
+                            let data = try JSONSerialization.data(withJSONObject: dataArray as Any, options: .prettyPrinted)
+                            let items = try JSONDecoder().decode(HotNewsResponse.self, from: data)
+                            completion { return items }
+                        } else {
+                            completion { return nil }
                         }
-                        
-                        hotNewsArray.append(hotNews)
+                    } catch {
+                        completion { throw error }
                     }
-                    
-                    completion { return hotNewsArray }
                     break
                 case .failure(let error):
                     completion { throw error }
@@ -95,32 +85,21 @@ class HotNewsProvider {
             alamofire.request(requestURL, method: .get, parameters: nil, encoding: URLEncoding.queryString, headers: headers).responseJSON { (response) in
                 
                 switch response.result {
-                case .success:
+                case let .success(jsonData):
                     
-                    guard let hotNewsDict = response.result.value as? [[String: AnyObject]],
-                        let dictArray = hotNewsDict.last?["data"]?["children"] as? [[String: AnyObject]] else {
-                            completion { return [Comment]() }
-                            return
+                    do {
+                        if let hotNewsDict = jsonData as? [[String: AnyObject]],
+                            let dataArray = hotNewsDict.last?["data"] as? [String: AnyObject] {
+                            let data = try JSONSerialization.data(withJSONObject: dataArray as Any, options: .prettyPrinted)
+                            let items = try JSONDecoder().decode(CommentsResponse.self, from: data)
+                            completion { return items }
+                        } else {
+                            completion { return nil }
+                        }
+                    } catch {
+                        completion { throw error }
                     }
                     
-                    var commentsArray: [Comment] = [Comment]()
-                    
-                    for comment in dictArray {
-                        let data = comment["data"]
-                        
-                        guard let jsonData = try? JSONSerialization.data(withJSONObject: data as Any, options: .prettyPrinted),
-                            let comment = try? JSONDecoder().decode(Comment.self, from: jsonData) else {
-                                completion { return [Comment]() }
-                                return
-                        }
-                        
-                        if !comment.isEmpty() {
-                            commentsArray.append(comment)
-                        }
-                    }
-                    
-                    completion { return commentsArray }
-                    break
                 case .failure(let error):
                     completion { throw error }
                     break

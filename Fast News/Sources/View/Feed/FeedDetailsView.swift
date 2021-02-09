@@ -6,39 +6,60 @@
 //
 
 import UIKit
+import Toast_Swift
 
 class FeedDetailsView: UIView {
     
     //MARK: - Properties
     
     @IBOutlet weak var tableView: UITableView!
-    var viewModels: [TypeProtocol] = [TypeProtocol]() {
-        didSet {
-            tableView.reloadData()
-        }
-    }
+    var viewModel: FeedDetailsViewModel!
     var delegate: FeedViewDelegate?
+    
+    private lazy var loadingView: UIView = {
+        let loadingView = UIActivityIndicatorView(frame: .zero)
+        loadingView.bounds.size.height = 40
+        loadingView.color = .black
+        loadingView.startAnimating()
+        return loadingView
+    }()
     
     //MARK: - Public Methods
     
-    func setup(with viewModels: [TypeProtocol], and delegate: FeedViewDelegate) {
+    func setup(with hotNewsViewModel: HotNewsViewModel, and delegate: FeedViewDelegate) {
         tableView.estimatedRowHeight = 400
         tableView.rowHeight = UITableView.automaticDimension
         
-        tableView.register(UINib(nibName: "FeedCell", bundle: Bundle.main), forCellReuseIdentifier: "FeedCell")
-        tableView.register(UINib(nibName: "CommentCell", bundle: Bundle.main), forCellReuseIdentifier: "CommentCell")
+        tableView.register(UINib(nibName: FeedCell.nibName, bundle: Bundle.main),
+                           forCellReuseIdentifier: FeedCell.nibName)
+        tableView.register(UINib(nibName: CommentCell.nibName, bundle: Bundle.main),
+                           forCellReuseIdentifier: CommentCell.nibName)
         
         self.delegate = delegate
         tableView.delegate = self
         tableView.dataSource = self
         
-        self.viewModels = viewModels
+        self.viewModel = FeedDetailsViewModel(with: hotNewsViewModel, and: self)
+        viewModel.loadComments()
+    }
+}
+
+extension FeedDetailsView: FeedViewModelDelegate {
+    func onLoading(_ loading: Bool) {
+        DispatchQueue.main.async {
+            self.tableView.tableFooterView = loading ? self.loadingView : nil
+        }
+    }
+    func onLoadSucessful() {
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
 }
 
 extension FeedDetailsView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModels.count
+        return viewModel.itemsCount
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -46,26 +67,26 @@ extension FeedDetailsView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let viewModel = viewModels[indexPath.row]
+        let cellViewModel = viewModel.viewModel(for: indexPath)
         
-        switch viewModel.type {
+        switch cellViewModel.type {
         case .hotNews:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as? FeedCell else { fatalError("Cell is not of type FeedCell!") }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: FeedCell.nibName, for: indexPath) as? FeedCell else { fatalError("Cell is not of type FeedCell!") }
             
-            cell.setup(viewModel: viewModel)
+            cell.setup(viewModel: cellViewModel)
             
             return cell
         case .comment:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentCell", for: indexPath) as? CommentCell else { fatalError("Cell is not of type CommentCell!") }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: CommentCell.nibName, for: indexPath) as? CommentCell else { fatalError("Cell is not of type CommentCell!") }
             
-            cell.setup(viewModel: viewModel)
+            cell.setup(viewModel: cellViewModel)
             
             return cell
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch viewModels[indexPath.row].type {
+        switch viewModel.viewModel(for: indexPath).type {
         case .hotNews:
             return 400.0
         default:
@@ -74,13 +95,11 @@ extension FeedDetailsView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let viewModel = viewModels[indexPath.row]
+        let cellViewModel = viewModel.viewModel(for: indexPath)
         
-        switch viewModel.type {
+        switch cellViewModel.type {
         case .hotNews:
-            guard let cell = tableView.cellForRow(at: indexPath) as? FeedCell else { fatalError("Cell is not of type FeedCell!") }
-            
-            delegate?.didTouch(cell: cell, indexPath: indexPath)
+            delegate?.didTap(with: cellViewModel)
         case .comment:
             return
         }

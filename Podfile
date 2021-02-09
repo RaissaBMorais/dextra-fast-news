@@ -7,6 +7,7 @@ target 'Fast News' do
 
   # Pods for Fast News
     pod 'Alamofire'
+    pod 'Toast-Swift', '~> 5.0.1'
 
   target 'Fast NewsTests' do
     inherit! :search_paths
