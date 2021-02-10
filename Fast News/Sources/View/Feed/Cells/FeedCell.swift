@@ -9,7 +9,6 @@ import UIKit
 
 @IBDesignable
 class FeedCell: UITableViewCell {
-    
     //MARK: - Properties
     
     @IBOutlet weak var authorLabel: UILabel!
@@ -18,6 +17,11 @@ class FeedCell: UITableViewCell {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var commentsLabel: UILabel!
     @IBOutlet weak var scoreLabel: UILabel!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        accessibilityIdentifier = "FeedCell"
+    }
     
     //MARK: - Public Methods
     func setup(viewModel: TypeProtocol) {

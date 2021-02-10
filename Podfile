@@ -15,6 +15,8 @@ target 'Fast News' do
   end
 
   target 'Fast NewsUITests' do
+    pod 'Alamofire'
+    pod 'Toast-Swift', '~> 5.0.1'
     inherit! :search_paths
     # Pods for testing
   end

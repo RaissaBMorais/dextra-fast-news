@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5249058225D395340066CF70 /* FeedDetailsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5249058125D395340066CF70 /* FeedDetailsUITests.swift */; };
 		5277087525D37E2000130C30 /* FeedDetailsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5277087425D37E2000130C30 /* FeedDetailsViewModelTests.swift */; };
 		52EF3E4325D2A277008F34B6 /* UITableViewCell+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF3E4225D2A277008F34B6 /* UITableViewCell+Ext.swift */; };
 		52EF3E4B25D2C9B1008F34B6 /* HotNewsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF3E4A25D2C9B1008F34B6 /* HotNewsResponse.swift */; };
@@ -31,7 +32,6 @@
 		E789E892232F47A40091660E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E789E891232F47A40091660E /* Assets.xcassets */; };
 		E789E895232F47A40091660E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E789E893232F47A40091660E /* LaunchScreen.storyboard */; };
 		E789E8A0232F47A50091660E /* MockProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E789E89F232F47A50091660E /* MockProviderTests.swift */; };
-		E789E8AB232F47A50091660E /* Fast_NewsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E789E8AA232F47A50091660E /* Fast_NewsUITests.swift */; };
 		E789E8C2232F499E0091660E /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E789E8C1232F499E0091660E /* FeedViewController.swift */; };
 		E789E8C4232F49AE0091660E /* FeedDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E789E8C3232F49AE0091660E /* FeedDetailsViewController.swift */; };
 		E789E8C9232F4A250091660E /* FeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E789E8C7232F4A250091660E /* FeedCell.swift */; };
@@ -71,6 +71,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5249058125D395340066CF70 /* FeedDetailsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailsUITests.swift; sourceTree = "<group>"; };
 		526215A6F93AD27F7E06CB76 /* Pods-Fast NewsUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Fast NewsUITests.debug.xcconfig"; path = "Target Support Files/Pods-Fast NewsUITests/Pods-Fast NewsUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		5277087425D37E2000130C30 /* FeedDetailsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailsViewModelTests.swift; sourceTree = "<group>"; };
 		52EF3E4225D2A277008F34B6 /* UITableViewCell+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+Ext.swift"; sourceTree = "<group>"; };
@@ -106,7 +107,6 @@
 		E789E89F232F47A50091660E /* MockProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockProviderTests.swift; sourceTree = "<group>"; };
 		E789E8A1232F47A50091660E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E789E8A6232F47A50091660E /* Fast NewsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Fast NewsUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E789E8AA232F47A50091660E /* Fast_NewsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fast_NewsUITests.swift; sourceTree = "<group>"; };
 		E789E8AC232F47A50091660E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E789E8C1232F499E0091660E /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
 		E789E8C3232F49AE0091660E /* FeedDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailsViewController.swift; sourceTree = "<group>"; };
@@ -283,8 +283,8 @@
 		E789E8A9232F47A50091660E /* Fast NewsUITests */ = {
 			isa = PBXGroup;
 			children = (
-				E789E8AA232F47A50091660E /* Fast_NewsUITests.swift */,
 				E789E8AC232F47A50091660E /* Info.plist */,
+				5249058125D395340066CF70 /* FeedDetailsUITests.swift */,
 			);
 			path = "Fast NewsUITests";
 			sourceTree = "<group>";
@@ -460,6 +460,7 @@
 				E789E8A2232F47A50091660E /* Sources */,
 				E789E8A3232F47A50091660E /* Frameworks */,
 				E789E8A4232F47A50091660E /* Resources */,
+				B26E53459C3B8E49664A7AB4 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -612,6 +613,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		B26E53459C3B8E49664A7AB4 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Fast NewsUITests/Pods-Fast NewsUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Fast NewsUITests/Pods-Fast NewsUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Fast NewsUITests/Pods-Fast NewsUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		E1781DA01B7B602677C6A208 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -683,7 +701,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E789E8AB232F47A50091660E /* Fast_NewsUITests.swift in Sources */,
+				5249058225D395340066CF70 /* FeedDetailsUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
