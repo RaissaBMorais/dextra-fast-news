@@ -9,22 +9,25 @@
 import Foundation
 
 class FeedViewModel {
-    internal var hotNewsViewModels = [HotNewsViewModel]() {
+    private var provider: ProviderProcotol
+
+    private var hotNewsViewModels = [HotNewsViewModel]() {
         didSet {
             delegate?.onLoadSucessful()
         }
     }
     var delegate: FeedViewModelDelegate?
 
-    internal var isFetchingData = false {
+    var isFetchingData = false {
         didSet {
             delegate?.onLoading(isFetchingData)
         }
     }
     internal var request = ListingRequest(after: "")
 
-    init(with delegate: FeedViewModelDelegate) {
+    init(with delegate: FeedViewModelDelegate?, provider: ProviderProcotol = HotNewsProvider.shared) {
         self.delegate = delegate
+        self.provider = provider
     }
     
     func itemsCount() -> Int {
@@ -39,14 +42,19 @@ class FeedViewModel {
         guard request.after != nil, !isFetchingData else { return }
         isFetchingData = true
 
-        HotNewsProvider.shared.hotNews(parameters: request.params()) { completion in
+        provider.hotNews(parameters: request.params()) { completion in
             do {
                 self.isFetchingData = false
                 let response = try completion()
                 if let after = response?.after {
                     self.request = ListingRequest(after: after)
                 }
-                self.hotNewsViewModels += response?.toHotNews().map { HotNewsViewModel(hotNews: $0) } ?? []
+                let newViewModels = response?.toHotNews().map { HotNewsViewModel(hotNews: $0) } ?? []
+                if nextPage {
+                    self.hotNewsViewModels += newViewModels
+                } else {
+                    self.hotNewsViewModels = newViewModels
+                }
             } catch {
                 self.delegate?.onLoadFailed(with: error)
             }

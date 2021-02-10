@@ -8,28 +8,17 @@
 import Foundation
 import Alamofire
 
-//MARK: - Type alias
-typealias HotNewsCallback = ( () throws -> HotNewsResponse?) -> Void
-typealias HotNewsCommentsCallback = ( () throws -> CommentsResponse?) -> Void
-
-class HotNewsProvider {
-    typealias ResponseCompletion<T> = (() throws -> T?) -> Void
+class HotNewsProvider: ProviderProcotol {
     //MARK: - Constants
     
     // Hot News endpoint
     private let kHotNewsEndpoint = "/r/ios/hot/.json"
     // Comments endpoint
     private let kCommentsEndpoint = "/r/ios/comments/@.json"
-    
-    // Hot News key/value parameters
-    private let kLimitKey = "limit"
-    private let kLimitValue = 5
-    private let kAfterKey = "after"
-    private var kAfterValue = ""
-    
+
     //MARK: - Singleton
     
-    static let shared: HotNewsProvider = HotNewsProvider()
+    static let shared = HotNewsProvider()
     
     //MARK: - Public Methods
 

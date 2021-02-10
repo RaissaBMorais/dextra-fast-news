@@ -10,6 +10,7 @@ import Foundation
 
 class FeedDetailsViewModel {
     private var hotNewsID: String!
+    private var provider: ProviderProcotol!
     
     internal var items = [TypeProtocol]() {
         didSet {
@@ -18,13 +19,16 @@ class FeedDetailsViewModel {
     }
     var delegate: FeedViewModelDelegate?
     
-    init (with hotNewsViewModel: HotNewsViewModel, and delegate: FeedViewModelDelegate) {
+    init (with hotNewsViewModel: HotNewsViewModel,
+          delegate: FeedViewModelDelegate?,
+          provider: ProviderProcotol = HotNewsProvider.shared) {
         self.hotNewsID = hotNewsViewModel.id
         self.items = [hotNewsViewModel]
         self.delegate = delegate
+        self.provider = provider
     }
     
-    var itemsCount: Int {
+    func itemsCount() -> Int {
         return items.count
     }
     
@@ -34,7 +38,7 @@ class FeedDetailsViewModel {
 
     func loadComments() {
         delegate?.onLoading(true)
-        HotNewsProvider.shared.hotNewsComments(id: hotNewsID) { completion in
+        provider.hotNewsComments(id: hotNewsID) { completion in
             self.delegate?.onLoading(false)
             do {
                 let response = try completion()

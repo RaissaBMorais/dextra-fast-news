@@ -39,7 +39,7 @@ class FeedDetailsView: UIView {
         tableView.delegate = self
         tableView.dataSource = self
         
-        self.viewModel = FeedDetailsViewModel(with: hotNewsViewModel, and: self)
+        self.viewModel = FeedDetailsViewModel(with: hotNewsViewModel, delegate: self)
         viewModel.loadComments()
     }
 }
@@ -59,7 +59,7 @@ extension FeedDetailsView: FeedViewModelDelegate {
 
 extension FeedDetailsView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.itemsCount
+        return viewModel.itemsCount()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
